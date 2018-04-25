@@ -1,7 +1,3 @@
-from __future__ import unicode_literals
-import urllib.request
-import os
-import sys
 import datetime
 
 import praw
