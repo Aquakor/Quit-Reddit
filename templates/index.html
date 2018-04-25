@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags. -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS. -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+    <!--  Style CSS.-->
+    <link href="static/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Title of the page. -->
+    <header class="container-fluid" id="sec1">
+        <h1 class="text-center">Quit Reddit</h1>
+    </header>
+    <hr />
+
+    <!-- Create a list of top submissions from subreddits. -->
+    <div class="container">
+    {% if subreddit_list %}
+        {% for subreddit in subreddit_list %}
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <!-- Title of the subreddit. -->
+                <h5 class="text-left"> '{{ subreddit[0].title }}' </h5>
+
+                <!-- Create an unordered list with top posts. -->
+                <ul>
+                {% for post in subreddit[1] %}
+                    <!-- Post score -->
+                    <li><b class="score">{{ post.score }}</b>,
+
+                        <!-- Check what content is in the reddit link and create a link to it with proper name. -->
+                        {% if 'twitch' in post.url or 'youtu' in post.url
+                        or 'v.redd' in post.url %}
+                            <a href="{{ post.url }}" target="_blank">Video</a>,
+                        {% elif 'i.redd' in post.url or 'imgur' in post.url %}
+                            <a href="{{ post.url }}" target="_blank">Image</a>,
+                        {% else %}
+                            <a href="{{ post.url }}" target="_blank">Post</a>,
+                        {% endif %}
+
+                        <!-- Title of the post. -->
+                        <i class="title">{{ post.title }}</i>,
+
+                        <!-- Date of the post. -->
+                        {{ get_date(post)}}</li>
+                {% endfor %}
+                <hr />
+                </ul>
+            </div>
+            <div class="col-md-1"></div>
+
+
+        </div>
+        {% endfor %}
+    {% else %}
+        <!-- If the subreddit_list is empty display this. -->
+        <h1>Something went wrong.</h1>
+    {% endif %}
+
+    </div>
+
+</body>
+</html>
