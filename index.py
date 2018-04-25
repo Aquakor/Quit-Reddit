@@ -27,11 +27,11 @@ def index():
 
 def get_submissions(subreddit_names, time_filter, num_submission):
     """
-    Get list with reddit submissions from given
-    list of subreddits using praw module.
+    Get list with reddit submissions from given subreddits using praw module.
 
     Args:
-        subreddit_names (list): Subreddits names, e.g. ['youtubehaiku', 'videos'].
+        subreddit_names (str, list): Subreddit name as a string
+            or subreddit names as a list.
 
         time_filter (str): Type to sort top posts, e.g.: all, day, hour, month, week, year.
 
@@ -41,16 +41,7 @@ def get_submissions(subreddit_names, time_filter, num_submission):
         List of tuples containing subreddit instance and submissions.
     """
 
-    # Obtain Reddit Instance.
-    reddit = praw.Reddit(client_id=config.client_id,
-                     client_secret=config.client_secret,
-                     user_agent=config.user_agent)
-
-    # Create an empty list to store subreddit instance and submissions.
-    subreddit_list = []
-
-    for subreddit_name in subreddit_names:
-
+    def download_submissions(subreddit_name):
         # Obtain Subreddit Instance.
         subreddit = reddit.subreddit(subreddit_name)
 
@@ -61,6 +52,25 @@ def get_submissions(subreddit_names, time_filter, num_submission):
         # the list to return.
         reddit_tuple = (subreddit, submissions)
         subreddit_list.append(reddit_tuple)
+
+    # Obtain Reddit Instance.
+    reddit = praw.Reddit(client_id=config.client_id,
+                     client_secret=config.client_secret,
+                     user_agent=config.user_agent)
+
+    # Create an empty list to store subreddit instance and submissions.
+    subreddit_list = []
+
+    # Download submissions.
+    if isinstance(subreddit_names, list):
+        for subreddit_name in subreddit_names:
+            download_submissions(subreddit_name)
+
+    elif isinstance(subreddit_names, str):
+        download_submissions(subreddit_names)
+
+    else:
+        raise TypeError("Input must be a string or a list.")
 
     return subreddit_list
 
