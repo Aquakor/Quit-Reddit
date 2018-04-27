@@ -60,7 +60,7 @@ def list_subs_with_num(subreddit, num_submission):
 
 
 
-def get_submissions(subreddit_names, time_filter='day', num_submission=5):
+def get_submissions(subreddit_names, time_filter='day', num_submission=20):
     """
     Get list with reddit submissions from given subreddits using praw module.
 
