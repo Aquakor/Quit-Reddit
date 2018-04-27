@@ -20,9 +20,15 @@
 
     <form action="/list" method="post">
         <div class="form-group">
-            <label for="inputSubreddit">Subreddit names</label>
             <input type="text" class="form-control" name="subredditName" placeholder="Subreddit name">
             <small class="form-text text-muted">Separate subreddit names with a comma.</small>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="timeFilter" placeholder="Time filter">
+            <small class="form-text text-muted">For example: 'all', 'day', 'hour', 'month', 'week' or 'year'.</small>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="numSubmission" placeholder="Number of submissions">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
