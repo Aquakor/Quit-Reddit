@@ -2,7 +2,7 @@ import datetime
 
 import praw
 import config
-from flask import Flask, url_for, render_template
+from flask import Flask, url_for, render_template, request
 app = Flask(__name__)
 
 @app.route('/')
@@ -20,6 +20,24 @@ def index():
     # Create html page with subreddit_list and get_date function.
     return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
 
+@app.route('/list', methods=['GET', 'POST'])
+def list_subreddit():
+    if request.method == 'GET':
+        return render_template('list.html')
+    else:
+        # Get everything from post method.
+        subreddit_names = request.form['subredditName'].split(',')
+        if isinstance(subreddit_names, list):
+            for i, subreddit_name in enumerate(subreddit_names):
+                subreddit_names[i] = subreddit_name.lstrip()
+        time_filter = request.form['timeFilter']
+        num_submission = int(request.form['numSubmission'])
+
+        # Obtain a list to populate html page.
+        subreddit_list = get_submissions(subreddit_names, time_filter, num_submission)
+
+        return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+
 
 def get_submissions(subreddit_names, time_filter, num_submission):
     """
@@ -29,7 +47,7 @@ def get_submissions(subreddit_names, time_filter, num_submission):
         subreddit_names (str, list): Subreddit name as a string
             or subreddit names as a list.
 
-        time_filter (str): Type to sort top posts, e.g.: all, day, hour, month, week, year.
+        time_filter (str): Type to sort top posts, e.g.: all, day, hour, month, week or year.
 
         submission_num: Number of submissions to scrap from reddit, e.g.: 10.
 
