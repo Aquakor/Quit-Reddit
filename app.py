@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    """ Generate main page with declared list of subreddits."""
     # Declare variables to get submissions from Reddit.
     subreddit_names = ['youtubehaiku', 'videos',
                        'mealtimevideos', 'livestreamfail',
@@ -22,6 +23,7 @@ def index():
 
 @app.route('/list', methods=['GET', 'POST'])
 def list_subreddit():
+    """ Page with input form to generate page with given subreddits. """
     if request.method == 'GET':
         return render_template('list.html')
     else:
@@ -38,8 +40,27 @@ def list_subreddit():
 
         return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
 
+@app.route('/<string:subreddit>')
+def list_subs(subreddit):
+    """ Quick way to load page with given subreddit. """
+    # Obtain a list to populate html page.
+    subreddit_list = get_submissions(subreddit)
 
-def get_submissions(subreddit_names, time_filter, num_submission):
+    return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+
+@app.route('/<string:subreddit>/<int:num_submission>')
+def list_subs_with_num(subreddit, num_submission):
+    """ Another quick way to load page with given subreddit and num_submissions. """
+    # Obtain a list to populate html page.
+    subreddit_list = get_submissions(subreddit_names=subreddit,
+                                     num_submission=num_submission)
+
+    return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+
+
+
+
+def get_submissions(subreddit_names, time_filter='day', num_submission=5):
     """
     Get list with reddit submissions from given subreddits using praw module.
 
