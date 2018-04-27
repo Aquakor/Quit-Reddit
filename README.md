@@ -5,6 +5,8 @@ This way of browsing reddit reduce the likelihood of scrolling through posts to 
 
 Web App created with Flask and Praw.
 
+Website link: [https://quitreddit.herokuapp.com/](https://quitreddit.herokuapp.com/)
+
 ### Prerequisities
 ```
 Praw
