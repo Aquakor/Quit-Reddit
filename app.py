@@ -11,7 +11,7 @@ app.secret_key = os.urandom(16)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        return render_template('base.html')
+        return render_template('index.html')
     else:
         # Get subreddit names from form.
         subreddit_names = request.form['subredditName']
@@ -93,6 +93,10 @@ def list_subs_with_num(subreddit, num_submission):
                                      num_submission=num_submission)
 
     return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 
