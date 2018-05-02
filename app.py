@@ -26,12 +26,12 @@ def index():
         else:
             # Display a warning to the user.
             flash('Please provide subreddit name.')
-            return render_template('index.html')
+            return render_template('submissions.html')
 
         # Obtain a list to populate html page.
         subreddit_list = get_submissions(subreddit_names)
 
-        return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+        return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
 @app.route('/list', methods=['GET', 'POST'])
 def list_subreddit():
@@ -58,24 +58,24 @@ def list_subreddit():
         time_filter = request.form['timeFilter']
         num_submission = request.form['numSubmission']
 
+        print('xD: {}'.format(num_submission.isdigit()))
+
         # Perform input checks and get the submissions.
-        time_filter_list = ['all', 'day', 'hour', 'month', 'week', 'year']
-        if time_filter in time_filter_list and (num_submission is not None
-                                                and num_submission.isdigit()):
+        time_filter_list = ['all', 'week', 'day', 'hour', 'month', 'week', 'year']
+        if time_filter in time_filter_list and num_submission.isdigit():
             subreddit_list = get_submissions(subreddit_names=subreddit_names,
                                             time_filter=time_filter,
                                             num_submission=int(num_submission))
-        elif time_filter in time_filter_list and num_submission is None:
+        elif time_filter in time_filter_list and num_submission.isdigit()==False:
             subreddit_list = get_submissions(subreddit_names=subreddit_names,
                                             time_filter=time_filter)
-        elif time_filter not in time_filter_list and (num_submission is not None
-                                                      and num_submission.isdigit()):
+        elif time_filter not in time_filter_list and num_submission.isdigit():
             subreddit_list = get_submissions(subreddit_names=subreddit_names,
                                             num_submission=int(num_submission))
         else:
             subreddit_list = get_submissions(subreddit_names)
 
-        return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+        return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
 @app.route('/<string:subreddit>')
 def list_subs(subreddit):
@@ -83,7 +83,7 @@ def list_subs(subreddit):
     # Obtain a list to populate html page.
     subreddit_list = get_submissions(subreddit)
 
-    return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+    return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
 @app.route('/<string:subreddit>/<int:num_submission>')
 def list_subs_with_num(subreddit, num_submission):
@@ -92,7 +92,7 @@ def list_subs_with_num(subreddit, num_submission):
     subreddit_list = get_submissions(subreddit_names=subreddit,
                                      num_submission=num_submission)
 
-    return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+    return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
 
 
