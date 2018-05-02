@@ -1,23 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-    {# Required meta tags. #}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'base.html' %}
 
-    {# Bootstrap CSS. #}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+{% block title %}
+    Quit Reddit
+{% endblock %}
 
-    {# Style CSS.#}
-    <link href="static/style.css" rel="stylesheet">
-</head>
-<body>
-    {# Title of the page. #}
-    <header class="container-fluid" id="sec1">
-        <h1 class="text-center">Quit Reddit</h1>
-    </header>
-    <hr />
-
+{% block body %}
     {# Create a list of top submissions from subreddits. #}
     <div class="container">
     {% if subreddit_list %}
@@ -63,7 +50,4 @@
         <h1>Something went wrong.</h1>
     {% endif %}
 
-    </div>
-
-</body>
-</html>
+{% endblock %}

@@ -5,21 +5,23 @@ import config
 from flask import Flask, url_for, render_template, request
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    """ Generate main page with declared list of subreddits."""
-    # Declare variables to get submissions from Reddit.
-    subreddit_names = ['youtubehaiku', 'videos',
-                       'mealtimevideos', 'livestreamfail',
-                       'fortnitebr']
-    time_filter = 'day'
-    num_submission = 5
+    if request.method == 'GET':
+        return render_template('base.html')
+    else:
+        # Get everything from post method.
+        subreddit_names = request.form['subredditName'].split(',')
+        if isinstance(subreddit_names, list):
+            for i, subreddit_name in enumerate(subreddit_names):
+                subreddit_names[i] = subreddit_name.lstrip()
+        time_filter = 'day'
+        num_submission = 20
 
-    # Obtain a list to populate html page.
-    subreddit_list = get_submissions(subreddit_names, time_filter, num_submission)
+        # Obtain a list to populate html page.
+        subreddit_list = get_submissions(subreddit_names, time_filter, num_submission)
 
-    # Create html page with subreddit_list and get_date function.
-    return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
+        return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
 
 @app.route('/list', methods=['GET', 'POST'])
 def list_subreddit():
