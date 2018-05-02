@@ -1,25 +1,35 @@
 import datetime
+import os
 
 import praw
 import config
-from flask import Flask, url_for, render_template, request
+from flask import Flask, url_for, render_template, request, flash
+
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         return render_template('base.html')
     else:
-        # Get everything from post method.
-        subreddit_names = request.form['subredditName'].split(',')
-        if isinstance(subreddit_names, list):
-            for i, subreddit_name in enumerate(subreddit_names):
-                subreddit_names[i] = subreddit_name.lstrip()
-        time_filter = 'day'
-        num_submission = 20
+        # Get subreddit names from form.
+        subreddit_names = request.form['subredditName']
+
+        # Check wheter input is a string and list.
+        if subreddit_names!='':
+            # Split every subreddit name ',' and attempt to separate if possible.
+            subreddit_names = subreddit_names.split(',')
+            if isinstance(subreddit_names, list):
+                for i, subreddit_name in enumerate(subreddit_names):
+                    subreddit_names[i] = subreddit_name.lstrip()
+        else:
+            # Display a warning to the user.
+            flash('Please provide subreddit name.')
+            return render_template('list.html')
 
         # Obtain a list to populate html page.
-        subreddit_list = get_submissions(subreddit_names, time_filter, num_submission)
+        subreddit_list = get_submissions(subreddit_names)
 
         return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
 
@@ -29,16 +39,41 @@ def list_subreddit():
     if request.method == 'GET':
         return render_template('list.html')
     else:
-        # Get everything from post method.
-        subreddit_names = request.form['subredditName'].split(',')
-        if isinstance(subreddit_names, list):
-            for i, subreddit_name in enumerate(subreddit_names):
-                subreddit_names[i] = subreddit_name.lstrip()
-        time_filter = request.form['timeFilter']
-        num_submission = int(request.form['numSubmission'])
+        # Get subreddit names from form.
+        subreddit_names = request.form['subredditName']
 
-        # Obtain a list to populate html page.
-        subreddit_list = get_submissions(subreddit_names, time_filter, num_submission)
+        # Check wheter input is a string and list.
+        if subreddit_names!='':
+            # Split every subreddit name ',' and attempt to separate if possible.
+            subreddit_names = subreddit_names.split(',')
+            if isinstance(subreddit_names, list):
+                for i, subreddit_name in enumerate(subreddit_names):
+                    subreddit_names[i] = subreddit_name.lstrip()
+        else:
+            # Display a warning to the user.
+            flash('Please provide subreddit name.')
+            return render_template('list.html')
+
+        # Get time filter and number of submissions from form.
+        time_filter = request.form['timeFilter']
+        num_submission = request.form['numSubmission']
+
+        # Perform input checks and get the submissions.
+        time_filter_list = ['all', 'day', 'hour', 'month', 'week', 'year']
+        if time_filter in time_filter_list and (num_submission is not None
+                                                and num_submission.isdigit()):
+            subreddit_list = get_submissions(subreddit_names=subreddit_names,
+                                            time_filter=time_filter,
+                                            num_submission=int(num_submission))
+        elif time_filter in time_filter_list and num_submission is None:
+            subreddit_list = get_submissions(subreddit_names=subreddit_names,
+                                            time_filter=time_filter)
+        elif time_filter not in time_filter_list and (num_submission is not None
+                                                      and num_submission.isdigit()):
+            subreddit_list = get_submissions(subreddit_names=subreddit_names,
+                                            num_submission=int(num_submission))
+        else:
+            subreddit_list = get_submissions(subreddit_names)
 
         return render_template('index.html', subreddit_list=subreddit_list, get_date=get_date)
 
@@ -77,7 +112,6 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
     Returns:
         List of tuples containing subreddit instance and submissions.
     """
-
     def download_submissions(subreddit_name):
         # Obtain Subreddit Instance.
         subreddit = reddit.subreddit(subreddit_name)
