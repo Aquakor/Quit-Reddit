@@ -87,7 +87,7 @@ def list_subs(subreddit):
 
 @app.route('/<string:subreddit>/<int:num_submission>')
 def list_subs_with_num(subreddit, num_submission):
-    """ Another quick way to load page with given subreddit and num_submissions. """
+    """ Quick way to load page with given subreddit and num_submissions. """
     # Obtain a list to populate html page.
     subreddit_list = get_submissions(subreddit_names=subreddit,
                                      num_submission=num_submission)
