@@ -26,7 +26,7 @@ def index():
         else:
             # Display a warning to the user.
             flash('Please provide subreddit name.')
-            return render_template('list.html')
+            return render_template('index.html')
 
         # Obtain a list to populate html page.
         subreddit_list = get_submissions(subreddit_names)
