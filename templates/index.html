@@ -2,7 +2,6 @@
 
 {% block body %}
     {# Create a list of top submissions from subreddits. #}
-    <div class="container">
     {% if subreddit_list %}
         {% for subreddit in subreddit_list %}
         <div class="row">
@@ -38,8 +37,6 @@
             </div>
             <div class="col-md-1"></div>
 
-
-        </div>
         {% endfor %}
     {% endif %}
 
