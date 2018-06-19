@@ -16,7 +16,7 @@ def index():
         return render_template('index.html')
     else:
         # Get subreddit names from form.
-        subreddit_names = request.form['subredditName']
+        subreddit_names = str(request.form['subredditName'])
 
         # Check wheter input is a string and list.
         if subreddit_names != '':
