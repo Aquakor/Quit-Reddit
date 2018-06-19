@@ -18,16 +18,8 @@ def index():
         # Get subreddit names from form.
         subreddit_names = str(request.form['subredditName'])
 
-        # Check wheter input is a string and list.
-        if subreddit_names != '':
-            # Split every subreddit name ',' and attempt to separate if possible.
-            subreddit_names = subreddit_names.split(',')
-            for i, subreddit_name in enumerate(subreddit_names):
-                    subreddit_names[i] = subreddit_name.lstrip()
-        else:
-            # Display a warning to the user.
-            flash('Please provide subreddit name.')
-            return render_template('submissions.html')
+        subreddit_names = check_input(subreddit_names=subreddit_names,
+                                      template='submission.html')
 
         # Obtain a list to populate html page.
         subreddit_list = get_submissions(subreddit_names)
@@ -39,6 +31,7 @@ def index():
 
         return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
+
 @app.route('/list', methods=['GET', 'POST'])
 def list_subreddit():
     """ Page with input form to generate page with given subreddits. """
@@ -48,17 +41,8 @@ def list_subreddit():
         # Get subreddit names from form.
         subreddit_names = request.form['subredditName']
 
-        # Check wheter input is a string and list.
-        if subreddit_names!='':
-            # Split every subreddit name ',' and attempt to separate if possible.
-            subreddit_names = subreddit_names.split(',')
-            if isinstance(subreddit_names, list):
-                for i, subreddit_name in enumerate(subreddit_names):
-                    subreddit_names[i] = subreddit_name.lstrip()
-        else:
-            # Display a warning to the user.
-            flash('Please provide subreddit name.')
-            return render_template('list.html')
+        subreddit_names = check_input(subreddit_names=subreddit_names,
+                                      template='list.html')
 
         # Get time filter and number of submissions from form.
         time_filter = request.form['timeFilter']
@@ -105,15 +89,35 @@ def list_subs_with_num(subreddit, num_submission):
 
 
 
+def check_input(subreddit_names, template):
+    """ Checks if user provided any subreddit name and split the input into
+        list of subreddit names.
+    Args:
+        subreddit_names(str): String of user input.
 
+        template(str): Template of .html page to render when user did not provide
+            any subreddit names.
+            
+    Returns:
+        List of separated subreddit names.
+    """
+    if subreddit_names != '':
+        # Split every subreddit name ',' and attempt to separate if possible.
+        subreddit_names = subreddit_names.split(',')
+        for i, subreddit_name in enumerate(subreddit_names):
+                subreddit_names[i] = subreddit_name.lstrip()
+        return subreddit_names
+    else:
+        # Display a warning to the user.
+        flash('Please provide subreddit name.')
+        return render_template(template)
 
 def get_submissions(subreddit_names, time_filter='day', num_submission=20):
     """
     Get list with reddit submissions from given subreddits using praw module.
 
     Args:
-        subreddit_names (str, list): Subreddit name as a string
-            or subreddit names as a list.
+        subreddit_names (str, list): Subreddit name.
 
         time_filter (str): Type to sort top posts, e.g.: all, day, hour, month, week or year.
 
