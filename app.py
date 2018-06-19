@@ -8,6 +8,8 @@ from flask import Flask, url_for, render_template, request, flash, abort
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
+#TODO: Merge index() and list_subreddit() to avoid repetition.
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
@@ -33,7 +35,7 @@ def index():
 
         if None in subreddit_list:
             # Display a warning to the user.
-            flash('Subreddit not found.')
+            flash('Something went wrong, check wheter input is correct.')
             return render_template('submissions.html')
 
         return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
@@ -80,7 +82,7 @@ def list_subreddit():
 
         if None in subreddit_list:
             # Display a warning to the user.
-            flash('Subreddit not found.')
+            flash('Something went wrong, check wheter input is correct.')
             return render_template('list.html')
 
         return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
@@ -123,7 +125,10 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
     """
     def download_submissions(subreddit_name):
         # Obtain Subreddit Instance.
-        subreddit = reddit.subreddit(subreddit_name)
+        try:
+            subreddit = reddit.subreddit(subreddit_name)
+        except:
+            return None
 
         # Check early if subreddit exists or has any submissions.
         try:
