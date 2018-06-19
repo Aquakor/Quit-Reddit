@@ -102,9 +102,6 @@ def list_subs_with_num(subreddit, num_submission):
 
     return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
 
 
 
