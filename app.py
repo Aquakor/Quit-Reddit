@@ -2,7 +2,7 @@ import datetime
 import os
 
 import praw
-import config
+#import config
 from flask import Flask, url_for, render_template, request, flash
 
 app = Flask(__name__)
@@ -129,9 +129,9 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
         subreddit_list.append(reddit_tuple)
 
     # Obtain Reddit Instance.
-    reddit = praw.Reddit(client_id=config.client_id,
-                     client_secret=config.client_secret,
-                     user_agent=config.user_agent)
+    reddit = praw.Reddit(client_id=os.environ.get('REDDIT_ID'),
+                     client_secret=os.environ.get('REDDIT_SECRET'),
+                     user_agent=os.environ.get('REDDIT_SECRET'))
 
     # Create an empty list to store subreddit instance and submissions.
     subreddit_list = []
