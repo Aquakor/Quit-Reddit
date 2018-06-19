@@ -133,7 +133,7 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
         # Check early if subreddit exists or has any submissions.
         try:
             subreddit.top('day', limit=1).next()
-        except prawcore.exceptions.NotFound:
+        except:
             # print('Subreddit not found')
             return None
 
