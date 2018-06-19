@@ -22,8 +22,7 @@ def index():
         if subreddit_names != '':
             # Split every subreddit name ',' and attempt to separate if possible.
             subreddit_names = subreddit_names.split(',')
-            if isinstance(subreddit_names, list):
-                for i, subreddit_name in enumerate(subreddit_names):
+            for i, subreddit_name in enumerate(subreddit_names):
                     subreddit_names[i] = subreddit_name.lstrip()
         else:
             # Display a warning to the user.
