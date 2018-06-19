@@ -137,7 +137,7 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
 
         # Create tuple with subreddit instance and submissions and append
         # the list to return.
-        reddit_tuple = (subreddit, submissions)
+        reddit_tuple = (subreddit_name, submissions)
         return reddit_tuple
 
     # Obtain Reddit Instance.
