@@ -2,8 +2,8 @@ import datetime
 import os
 
 import praw
-#import config
-from flask import Flask, url_for, render_template, request, flash
+import prawcore
+from flask import Flask, url_for, render_template, request, flash, abort
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
@@ -17,7 +17,7 @@ def index():
         subreddit_names = request.form['subredditName']
 
         # Check wheter input is a string and list.
-        if subreddit_names!='':
+        if subreddit_names != '':
             # Split every subreddit name ',' and attempt to separate if possible.
             subreddit_names = subreddit_names.split(',')
             if isinstance(subreddit_names, list):
@@ -30,6 +30,11 @@ def index():
 
         # Obtain a list to populate html page.
         subreddit_list = get_submissions(subreddit_names)
+
+        if None in subreddit_list:
+            # Display a warning to the user.
+            flash('Subreddit not found.')
+            return render_template('submissions.html')
 
         return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
@@ -58,8 +63,6 @@ def list_subreddit():
         time_filter = request.form['timeFilter']
         num_submission = request.form['numSubmission']
 
-        print('xD: {}'.format(num_submission.isdigit()))
-
         # Perform input checks and get the submissions.
         time_filter_list = ['all', 'week', 'day', 'hour', 'month', 'week', 'year']
         if time_filter in time_filter_list and num_submission.isdigit():
@@ -74,6 +77,11 @@ def list_subreddit():
                                             num_submission=int(num_submission))
         else:
             subreddit_list = get_submissions(subreddit_names)
+
+        if None in subreddit_list:
+            # Display a warning to the user.
+            flash('Subreddit not found.')
+            return render_template('list.html')
 
         return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
@@ -120,13 +128,20 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
         # Obtain Subreddit Instance.
         subreddit = reddit.subreddit(subreddit_name)
 
+        # Check early if subreddit exists or has any submissions.
+        try:
+            subreddit.top('day', limit=1).next()
+        except prawcore.exceptions.NotFound:
+            # print('Subreddit not found')
+            return None
+
         # Get top posts from Subreddit Instance.
         submissions = subreddit.top(time_filter, limit=num_submission)
 
         # Create tuple with subreddit instance and submissions and append
         # the list to return.
         reddit_tuple = (subreddit, submissions)
-        subreddit_list.append(reddit_tuple)
+        return reddit_tuple
 
     # Obtain Reddit Instance.
     reddit = praw.Reddit(client_id=os.environ.get('REDDIT_ID'),
@@ -139,10 +154,10 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
     # Download submissions.
     if isinstance(subreddit_names, list):
         for subreddit_name in subreddit_names:
-            download_submissions(subreddit_name)
+            subreddit_list.append(download_submissions(subreddit_name))
 
     elif isinstance(subreddit_names, str):
-        download_submissions(subreddit_names)
+        subreddit_list.append(download_submissions(subreddit_names))
 
     else:
         raise TypeError("Input must be a string or a list.")
