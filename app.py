@@ -8,8 +8,6 @@ from flask import Flask, url_for, render_template, request, flash, abort
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
-#TODO: Merge index() and list_subreddit() to avoid repetition.
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
@@ -18,10 +16,11 @@ def index():
         # Get subreddit names from form.
         subreddit_names = str(request.form['subredditName'])
 
+        # Perform input check.
         subreddit_names = check_input(subreddit_names=subreddit_names,
                                       template='submission.html')
 
-        # Obtain a list to populate html page.
+        # Obtain a list with submissions to populate html page.
         subreddit_list = get_submissions(subreddit_names)
 
         if None in subreddit_list:
@@ -29,18 +28,20 @@ def index():
             flash('Something went wrong, check wheter input is correct.')
             return render_template('submissions.html')
 
-        return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
+        return render_template(template_name_or_list='submissions.html',
+                               subreddit_list=subreddit_list,
+                               get_date=get_date)
 
 
 @app.route('/list', methods=['GET', 'POST'])
 def list_subreddit():
-    """ Page with input form to generate page with given subreddits. """
     if request.method == 'GET':
         return render_template('list.html')
     else:
         # Get subreddit names from form.
         subreddit_names = request.form['subredditName']
 
+        # Perform input check.
         subreddit_names = check_input(subreddit_names=subreddit_names,
                                       template='list.html')
 
@@ -87,7 +88,11 @@ def list_subs_with_num(subreddit, num_submission):
 
     return render_template('submissions.html', subreddit_list=subreddit_list, get_date=get_date)
 
-
+########################################################################
+#
+# HELPER FUNCTIONS
+#
+########################################################################
 
 def check_input(subreddit_names, template):
     """ Checks if user provided any subreddit name and split the input into
@@ -97,19 +102,21 @@ def check_input(subreddit_names, template):
 
         template(str): Template of .html page to render when user did not provide
             any subreddit names.
-            
+
     Returns:
         List of separated subreddit names.
     """
     if subreddit_names != '':
-        # Split every subreddit name ',' and attempt to separate if possible.
+        # Split every subreddit name into and remove whitespaces.
         subreddit_names = subreddit_names.split(',')
         for i, subreddit_name in enumerate(subreddit_names):
-                subreddit_names[i] = subreddit_name.lstrip()
+                subreddit_names[i] = subreddit_name.strip()
+
         return subreddit_names
     else:
-        # Display a warning to the user.
+        # Display a warning to the user if subreddit name was not provided.
         flash('Please provide subreddit name.')
+
         return render_template(template)
 
 def get_submissions(subreddit_names, time_filter='day', num_submission=20):
@@ -131,20 +138,19 @@ def get_submissions(subreddit_names, time_filter='day', num_submission=20):
         try:
             subreddit = reddit.subreddit(subreddit_name)
         except:
+            # Returns None if provided subreddit name is incorrect.
             return None
 
         # Check early if subreddit exists or has any submissions.
         try:
             subreddit.top('day', limit=1).next()
         except:
-            # print('Subreddit not found')
             return None
 
         # Get top posts from Subreddit Instance.
         submissions = subreddit.top(time_filter, limit=num_submission)
 
-        # Create tuple with subreddit instance and submissions and append
-        # the list to return.
+        # Create tuple with subreddit instance and submissions.
         reddit_tuple = (subreddit_name, submissions)
         return reddit_tuple
 
