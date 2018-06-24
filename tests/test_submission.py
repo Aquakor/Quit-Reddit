@@ -1,6 +1,8 @@
 import unittest
+import sys
+sys.path.append('../')
 
-from index import get_submissions
+from app import get_submissions
 
 class TestSubmission(unittest.TestCase):
 
