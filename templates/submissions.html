@@ -17,8 +17,8 @@
                     <li><b class="score">{{ post.score }}</b>,
 
                         {# Check what content is in the reddit link and create a link to it with proper name. #}
-                        {% if 'twitch' in post.url or 'youtu' in post.url
-                        or 'v.redd' in post.url %}
+                        {% if 'twitch.tv' in post.url or 'youtu' in post.url
+                        or 'v.redd' in post.url or 'neatclip.com' in post.url%}
                             <a href="{{ post.url }}" target="_blank">Video</a>,
                         {% elif 'i.redd' in post.url or 'imgur' in post.url %}
                             <a href="{{ post.url }}" target="_blank">Image</a>,
